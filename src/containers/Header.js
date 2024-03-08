@@ -8,19 +8,7 @@ function Header(){
 
     const dispatch = useDispatch()
     const {noOfNotifications, pageTitle} = useSelector(state => state.header)
-    // const [currentTheme, setCurrentTheme] = useState(localStorage.getItem("theme"))
     const [currentTheme, setCurrentTheme] = useState("dark")
-
-    // useEffect(() => {
-    //     themeChange(true)
-    //     if(currentTheme === null){
-    //         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ) {
-    //             setCurrentTheme("dark")
-    //         }else{
-    //             setCurrentTheme("dark")
-    //         }
-    //     }
-    //   }, [])
 
 
     function logoutUser(){
@@ -29,7 +17,6 @@ function Header(){
     }
 
     return(
-        // navbar fixed  flex-none justify-between bg-base-300  z-10 shadow-md
         
         <>
             <div className="navbar sticky top-0 bg-gray-900  z-10 shadow-md ">
@@ -44,17 +31,6 @@ function Header(){
                 
 
             <div className="flex flex-row justify-between">
-
-                {/* Multiple theme selection, uncomment this if you want to enable multiple themes selection, 
-                also includes corporate and retro themes in tailwind.config file */}
-                
-            {/* Light and dark theme selection toogle **/}
-            {/* <label className="swap ">
-                <input type="checkbox"/>
-                <SunIcon data-set-theme="light" data-act-class="ACTIVECLASS" className={"fill-current w-6 h-6 "+(currentTheme === "dark" ? "swap-on" : "swap-off")}/>
-                <MoonIcon data-set-theme="dark" data-act-class="ACTIVECLASS" className={"fill-current w-6 h-6 "+(currentTheme === "light" ? "swap-on" : "swap-off")} />
-            </label> */}
-
                 <div>
                     <a href="https://comchat.io" target="_blank">
                         <p className="font-bold hover:text-slate-500">Comchat</p>
