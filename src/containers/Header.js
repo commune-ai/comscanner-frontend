@@ -21,7 +21,6 @@ function Header(){
         <>
             <div className="navbar sticky top-0 bg-gray-900  z-10 shadow-md ">
 
-                {/* Menu toogle for mobile view or small screen */}
                 <div className="flex-1">
                     <label htmlFor="left-sidebar-drawer" className="btn btn-primary drawer-button lg:hidden">
                     <Bars3Icon className="h-5 inline-block w-5"/></label>
