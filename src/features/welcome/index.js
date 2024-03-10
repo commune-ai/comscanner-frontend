@@ -1,104 +1,63 @@
-import { useState } from "react"
-import { useDispatch } from "react-redux"
+import React, { useEffect, useRef, memo } from "react"
 import TitleCard from "../../components/Cards/TitleCard"
-import { showNotification } from "../common/headerSlice"
-import { binanceCryptoIcons } from 'binance-icons';
-import React from 'react';
-import { LoadingOutlined } from '@ant-design/icons'
-import io from 'socket.io-client';
-var socket = io.connect("https://commune-predict-backend-1.onrender.com/");
+  
+
 
 function Welcome() {
+    const container = useRef();
+    const symbol = "COINEX:COMAIUSDT";
 
-    const [data, setData] = useState([]);
-    var hasBtc = binanceCryptoIcons.has('');
-    var btcIcon = binanceCryptoIcons.get('');
-    const default_hasBtc = binanceCryptoIcons.has('cfx');
-    const default_btcIcon = binanceCryptoIcons.get('cfx');
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    var cnt = 0;
-    const startWebsocket = () => {
-        socket.on('token1min', (data) => {
-            if (data.longTokens) {
-                setData(data.longTokens);
+    useEffect(
+        () => {
+          const script = document.createElement("script");
+          if (localStorage.getItem("state") !== "1") {
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+            script.type = "text/javascript";
+            script.async = true;
+            script.innerHTML = `
+              {
+                "autosize": true,
+                "symbol": "${symbol}",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "enable_publishing": true,
+                "withdateranges": true,
+                "range": "YTD",
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "details": true,
+                "hotlist": true,
+                "calendar": false,
+                "show_popup_button": true,
+                "popup_width": "1000",
+                "popup_height": "650",
+                "support_host": "https://www.tradingview.com"
+              }`;
+            if (container.current.children.length === 1) {
+              container.current.appendChild(script);
             } else {
-                setData([]);
             }
-        });
-        socket.onclose = () => {
-            socket = null;
-            setTimeout(startWebsocket, 5000);
-        };
-        socket.onerror = (error) => {
-            socket = null;
-            setTimeout(startWebsocket, 1000);
-        };
-    }
-    startWebsocket();
-
+            localStorage.setItem("state", "1");
+          }
+          else {
+            localStorage.setItem("state", "0");
+          }
+          // console.log('---------------', symbol)
+        },
+        [symbol]
+      );
+      
     return (
         <>
-            <div className="mt-[10px] grid grid-cols-1 md:grid-cols-1 min-h-[90vh] overflow-hidden ">
-                <TitleCard title={"Long Signal"}>
-                    <div className="overflow-x-auto">
-                        <table className="table w-full">
-                            <thead>
-                                <tr>
-                                    <th className="normal-case text-slate-300">No</th>
-                                    <th className="normal-case text-slate-300">Pairs</th>
-                                    <th className="normal-case text-slate-300">Price</th>
-                                    <th className="normal-case text-slate-300">Change</th>
-                                    <th className="normal-case text-slate-300">1h high</th>
-                                    <th className="normal-case text-slate-300">1h low</th>
-                                    <th className="normal-case text-slate-300">Open</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    Object.keys(data).length ? Object.keys(data).map((keyName) => {
-                                        cnt++;
-                                        const cryptoItem = data[keyName];
-                                        var unKnown = Object.keys(data)[0].slice(0, -4);
-                                        hasBtc = binanceCryptoIcons.has(unKnown);
-                                        btcIcon = binanceCryptoIcons.get(unKnown);
-                                        return (
-                                            <tr key={keyName}>
-                                                <th className="text-slate-300">#{cnt}</th>
-                                                <th className=" text-[16px] flex flex-col md:flex-row items-center  text-slate-300 uppercase">
-                                                    {
-                                                        hasBtc ?
-                                                            <span dangerouslySetInnerHTML={{ __html: btcIcon.replace('"32"', '"24"') }} />
-                                                            :
-                                                            <span dangerouslySetInnerHTML={{ __html: default_btcIcon.replace('"32"', '"24"') }} />
-                                                    }{Object.keys(data)[cnt - 1].slice(0, -4)}/{Object.keys(data)[cnt - 1].slice(-4,)}
-                                                </th>
-                                                <td className="text-slate-300">{Number(cryptoItem.closePrice).toFixed(4)}</td>
-                                                <td className="text-slate-300">{Number(cryptoItem.change).toFixed(4)} %</td>
-                                                <td className="text-slate-300">{Number(cryptoItem.high).toFixed(4)}</td>
-                                                <td className="text-slate-300">{Number(cryptoItem.low).toFixed(4)}</td>
-                                                <td className="font-semibold text-white badge badge-success mb-[13px]">long</td>
-                                            </tr>
-                                        )
-                                    })
-                                        :
-                                        <tr>
-
-                                        </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    {
-                        data.status == "ok" && !Object.keys(data).length && <p className="mt-[100px] text-center text-2xl font-bold m-auto">No Matching Data  😭<br />There are currently no Short Signals showing a 2% difference in token price over 3 minutes.</p>
-                    }
-                    {
-                        data.status != "ok" && !Object.keys(data).length &&
-                        <p className="mt-[100px] text-center text-2xl font-bold m-auto">Fetching data ...<br /><LoadingOutlined style={{ fontSize: 24 }} spin /></p>
-                    }
-                </TitleCard>
+            <TitleCard title={"Trading View"}>
+            <div className="mt-[50px] h-[600px]" ref={container} >
+                <div className=""></div>
             </div>
+            </TitleCard>
         </>
     )
 }
 
-export default Welcome
+export default memo(Welcome)
